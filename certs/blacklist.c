@@ -208,8 +208,10 @@ int mark_hash_blacklisted(const u8 *hash, size_t hash_len,
 	int err;
 
 	buffer = get_raw_hash(hash, hash_len, hash_type);
-	if (IS_ERR(buffer))
+	if (IS_ERR(buffer)) {
+		pr_err("Failed to blacklist hash: %pe\n", buffer);
 		return PTR_ERR(buffer);
+	}
 	err = mark_raw_hash_blacklisted(buffer);
 	kfree(buffer);
 	return err;
@@ -229,8 +231,10 @@ int is_hash_blacklisted(const u8 *hash, size_t hash_len,
 	int ret = 0;
 
 	buffer = get_raw_hash(hash, hash_len, hash_type);
-	if (IS_ERR(buffer))
+	if (IS_ERR(buffer)) {
+		pr_err("Failed to blacklist hash: %pe\n", buffer);
 		return PTR_ERR(buffer);
+	}
 	kref = keyring_search(make_key_ref(blacklist_keyring, true),
 			      &key_type_blacklist, buffer, false);
 	if (!IS_ERR(kref)) {
